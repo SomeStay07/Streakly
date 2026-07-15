@@ -15,12 +15,8 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -72,23 +68,6 @@ fun OnboardingPage(title: String, text: String, onFinish: (() -> Unit)? = null) 
         if (onFinish != null) {
             Button(onClick = onFinish) { Text("Начать") }
             Spacer(Modifier.height(24.dp))
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun HomeScreen() {
-    Scaffold(
-        topBar = { TopAppBar(title = { Text("Streakly") }) },
-        floatingActionButton = {
-            FloatingActionButton(onClick = { }) { Text("+") }
-        },
-    ) { padding ->
-        Box(Modifier
-            .fillMaxSize()
-            .padding(padding), contentAlignment = Alignment.Center) {
-            Text("Пока пусто", color = Color.Gray)
         }
     }
 }

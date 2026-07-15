@@ -4,29 +4,31 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+        setContent { StreaklyRoot() }
+    }
+}
 
-        val storage = createKeyValueStorage()
-        setContent {
-            var onboardingDone by remember {
-                mutableStateOf(storage.getBool(KEY_ONBOARDING_COMPLETED))
-            }
-            if (onboardingDone) {
-                HomeScreen()
-            } else {
-                OnboardingScreen(onFinish = {
-                    storage.putBool(KEY_ONBOARDING_COMPLETED, true)
-                    onboardingDone = true
-                })
-            }
-        }
+@Composable
+private fun StreaklyRoot() {
+    val viewModel: OnboardingViewModel = viewModel {
+        OnboardingViewModel(OnboardingRepository(createKeyValueStorage()))
+    }
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
+    if (state.completed) {
+        HomeScreen()
+    } else {
+        OnboardingScreen(
+            onFinish = { viewModel.onIntent(OnboardingIntent.StartTapped) },
+        )
     }
 }

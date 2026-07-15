@@ -1,35 +1,45 @@
 import SwiftUI
 import SharedLogic
 
-@main
-struct StreaklyApp: App {
-    private let storage = KeyValueStorage_iosKt.createKeyValueStorage()
+final class OnboardingViewModelAdapter: ObservableObject {
+    @Published private(set) var state: OnboardingState
 
-    var body: some Scene {
-        WindowGroup { RootView(storage: storage) }
+    private let viewModel: OnboardingViewModel
+    private var handle: WatchHandle?
+
+    init() {
+        let repository = OnboardingRepository(
+            storage: KeyValueStorage_iosKt.createKeyValueStorage()
+        )
+        viewModel = OnboardingViewModel(repository: repository)
+        state = viewModel.currentState()
+        handle = viewModel.watchState { [weak self] newState in
+            self?.state = newState
+        }
+    }
+
+    deinit {
+        handle?.close()
+    }
+
+    func send(_ intent: OnboardingIntent) {
+        viewModel.onIntent(intent: intent)
     }
 }
 
-private struct RootView: View {
-    let storage: KeyValueStorage
-    @State private var onboardingDone: Bool
+@main
+struct StreaklyApp: App {
+    @StateObject private var onboarding = OnboardingViewModelAdapter()
 
-    init(storage: KeyValueStorage) {
-        self.storage = storage
-        _onboardingDone = State(
-            initialValue: storage.getBool(key: KeyValueStorageKt.KEY_ONBOARDING_COMPLETED)
-        )
-    }
-
-    var body: some View {
-        if onboardingDone {
-            HomeView()
-        } else {
-            OnboardingView {
-                storage.putBool(key: KeyValueStorageKt.KEY_ONBOARDING_COMPLETED, value: true)
-                onboardingDone = true
+    var body: some Scene {
+        WindowGroup {
+            if onboarding.state.completed {
+                NavigationStack { HomeView() }
+            } else {
+                OnboardingView {
+                    onboarding.send(OnboardingIntentStartTapped.shared)
+                }
             }
         }
     }
 }
-

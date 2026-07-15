@@ -6,5 +6,3 @@ interface KeyValueStorage {
 }
 
 expect fun createKeyValueStorage(): KeyValueStorage
-
-const val KEY_ONBOARDING_COMPLETED = "onboarding_completed"

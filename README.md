@@ -1,35 +1,64 @@
-This is a Kotlin Multiplatform project targeting Android, iOS.
+# Streakly
 
-* [/iosApp](./iosApp/iosApp) contains an iOS application. Even if you’re sharing your UI with Compose Multiplatform,
-  you need this entry point for your iOS app. This is also where you should add SwiftUI code for your project.
+Приложение привычек на Kotlin Multiplatform. Собираю его шаг за шагом, с нуля, на актуальном стеке. Разбираю всё подробно, а в серию беру лишь то, что правда нужно в работе и на собесах. Это для тех, кто пишет на iOS и хочет понять KMP для работы. Концентрат теории и практики, сразу в прод!)
 
-* [/sharedLogic](./sharedLogic/src) is for the code that will be shared between app targets in the project.
-  The most important subfolder is [commonMain](./sharedLogic/src/commonMain/kotlin). If preferred, you
-  can add code to the platform-specific folders here too.
+Общий код на Kotlin для iOS и Android, а UI нативный: SwiftUI и Jetpack Compose. Ещё для практики соберём один общий экран на Compose Multiplatform - буквально один, чтобы попробовать и общий UI.
 
-* [/sharedUI](./sharedUI/src) is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - [commonMain](./sharedUI/src/commonMain/kotlin) is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    the [iosMain](./sharedUI/src/iosMain/kotlin) folder would be the right place for such calls.
-    Similarly, if you want to edit the Desktop (JVM) specific part, the [jvmMain](./sharedUI/src/jvmMain/kotlin)
-    folder is the appropriate location.
+> Совет: печатай код сам по ходу видео - так лучше запомнишь. А репозиторий держи рядом, чтобы свериться, если где-то застрял.
 
-### Running the apps
+## Серии
 
-Use the run configurations provided by the run widget in your IDE's toolbar. You can also use these commands and options:
+У каждой серии свой тег и релиз - код ровно в том состоянии, что в конце видео.
 
-- Android app: `./gradlew :androidApp:assembleDebug`
-- iOS app: open the [/iosApp](./iosApp) directory in Xcode and run it from there.
+| Серия | Тема | Видео | Код | Изменения |
+|---|---|---|---|---|
+| [0/14] | Введение: что такое KMP и наш стек | [смотреть](https://boosty.to/somestay/posts/60c3241d-279a-4e36-a280-0376b79d1843) | пока без кода | - |
+| [1/14] | Setup проекта, expect/actual, онбординг | [смотреть](https://boosty.to/somestay/posts/c4b1931b-d55e-487c-8a2d-586cc06f1e38) | [v1](../../tree/v1) | [дифф](../../compare/v0...v1) |
+| [2/14] | MVI на StateFlow, общий ViewModel, убираем дубль | [смотреть](https://boosty.to/somestay/posts/118b409b-ed49-4d80-bfc7-f4331addf24e) | [v2](../../tree/v2) | [дифф](../../compare/v1...v2) |
 
-### Running tests
+Дальше по плану: база данных на Room KMP, SKIE, DI на Koin, сеть на Ktor и так далее.
 
-Use the run button in your IDE's editor gutter, or run tests using Gradle tasks:
+## Как смотреть код
 
-- Android tests: `./gradlew :sharedUI:testAndroidHostTest :sharedLogic:testAndroidHostTest`
-- iOS tests: `./gradlew :sharedLogic:iosSimulatorArm64Test`
+В таблице выше всё кликабельно, прямо в браузере, качать не нужно. Колонка **Код** - весь код на конец серии, листаешь файлы. Колонка **Изменения** - что серия добавила: слева то, что было, справа что стало.
 
----
+Хочешь код к себе - в [Releases](../../releases) кнопка "Source code (zip)", или клонируй репозиторий и `git checkout v2`.
 
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+## Как запустить
+
+Нужны: свежая Android Studio, Xcode и JDK 21. JDK ставится, например, через `brew install --cask temurin@21`.
+
+Android:
+
+```bash
+./gradlew :androidApp:assembleDebug
+```
+
+или запусти конфигурацию androidApp прямо в Android Studio.
+
+iOS: открой папку `iosApp` в Xcode и запусти на симуляторе.
+
+Файла `local.properties` в репозитории нет - там локальный путь к Android SDK, а Android Studio создаст его сама при открытии проекта. Если собираешь из консоли, задай путь к SDK через `ANDROID_HOME` или `local.properties`.
+
+## Стек на момент текущей серии: 2/14
+
+Версии беру те, что даёт мастер Android Studio - стабильную, проверенную связку, на которой всё собирается. Ниже коротко, зачем тут каждый.
+
+- **Kotlin 2.3.21** - язык общего кода, компилятор K2.
+- **Gradle 9.1.0, Android Gradle Plugin 9.0.1** - этим собираем проект. Тоже из мастера, между собой дружат.
+- **kotlinx.coroutines 1.10.2** - ради StateFlow, это реактивная основа нашего MVI. Позже через корутины же SKIE будет мостить данные в Swift.
+- **AndroidX Lifecycle ViewModel, мультиплатформенный, 2.11.0** - чтобы ViewModel пережил пересоздание Activity и жил в общем коде, один на обе платформы. Android Runtime за собой при этом не тянет.
+- **Compose Multiplatform 1.11.0** - на нём Android UI: Jetpack Compose, из него же и соберём тот самый общий экран для практики.
+- **compileSdk 36, minSdk 24** - собираемся под свежий Android.
+- **MVI** - актуальная для KMP архитектура, так же набирает популярность и в нативном iOS.
+- **Watch** - чтобы понять внутрянку SKIE, мы без его помощи реализуем хелпер, в третьем видео про это подробно.
+
+## Модули
+
+- `androidApp` - приложение под Android на Jetpack Compose
+- `iosApp` - приложение под iOS на SwiftUI, проект Xcode
+- `sharedLogic` - общий код на Kotlin: MVI, ViewModel, репозитории, хранилище. Внутри `commonMain`, `androidMain`, `iosMain`
+
+## Автор
+
+Telegram: [@somestay07](https://telegram.im/somestay07)
