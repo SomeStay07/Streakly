@@ -8,7 +8,7 @@ final class HomeViewModelAdapter: ObservableObject {
     private var handle: WatchHandle?
 
     init() {
-        viewModel = HomeViewModel(repository: HabitsRepository())
+        viewModel = HomeFactoryKt.createHomeViewModel()
         state = viewModel.currentState()
 
         handle = viewModel.watchState { [weak self] newState in
