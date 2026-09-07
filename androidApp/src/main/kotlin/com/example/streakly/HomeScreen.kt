@@ -27,9 +27,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen() {
-    val viewModel: HomeViewModel = viewModel {
-        HomeViewModel(HabitsRepository())
-    }
+    val viewModel: HomeViewModel = viewModel { createHomeViewModel() }
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     var draft by remember { mutableStateOf("") }

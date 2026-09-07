@@ -12,7 +12,7 @@ sealed interface HomeIntent {
     data class HabitTapped(val id: Long) : HomeIntent
 }
 
-class HomeViewModel(
+class HomeViewModel internal constructor(
     private val repository: HabitsRepository,
 ) : MviViewModel<HomeState, HomeIntent>(HomeState()) {
 
@@ -24,8 +24,10 @@ class HomeViewModel(
         }
     }
 
-    override fun onIntent(intent: HomeIntent) = when (intent) {
-        is HomeIntent.AddTapped -> repository.add(intent.name)
-        is HomeIntent.HabitTapped -> repository.toggle(intent.id)
+    override fun onIntent(intent: HomeIntent) {
+        when (intent) {
+            is HomeIntent.AddTapped -> viewModelScope.launch { repository.add(intent.name) }
+            is HomeIntent.HabitTapped -> viewModelScope.launch { repository.toggle(intent.id) }
+        }
     }
 }

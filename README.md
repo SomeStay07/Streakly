@@ -15,8 +15,9 @@
 | [0/14] | Введение: что такое KMP и наш стек | [смотреть](https://boosty.to/somestay/posts/60c3241d-279a-4e36-a280-0376b79d1843) | пока без кода | - |
 | [1/14] | Setup проекта, expect/actual, онбординг | [смотреть](https://boosty.to/somestay/posts/c4b1931b-d55e-487c-8a2d-586cc06f1e38) | [v1](../../tree/v1) | [дифф](../../compare/v0...v1) |
 | [2/14] | MVI на StateFlow, общий ViewModel, убираем дубль | [смотреть](https://boosty.to/somestay/posts/118b409b-ed49-4d80-bfc7-f4331addf24e) | [v2](../../tree/v2) | [дифф](../../compare/v1...v2) |
+| [3/14] | База данных на Room KMP: Entity, Dao, Database в общем коде | [смотреть](https://boosty.to/somestay/posts/15e37e9f-00cd-4b52-b5f5-94f7d50ad097) | [v3](../../tree/v3) | [дифф](../../compare/v2...v3) |
 
-Дальше по плану: база данных на Room KMP, SKIE, DI на Koin, сеть на Ktor и так далее.
+Дальше по плану: SKIE, DI на Koin, сеть на Ktor и так далее.
 
 ## Как смотреть код
 
