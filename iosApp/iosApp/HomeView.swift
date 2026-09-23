@@ -1,23 +1,37 @@
 import SwiftUI
 import SharedLogic
 
+@MainActor
 final class HomeViewModelAdapter: ObservableObject {
     @Published private(set) var state: HomeState
+    @Published var showEmptyName = false
 
     private let viewModel: HomeViewModel
-    private var handle: WatchHandle?
+    private var stateTask: Task<Void, Never>?
+    private var effectsTask: Task<Void, Never>?
 
     init() {
-        viewModel = HomeFactoryKt.createHomeViewModel()
-        state = viewModel.currentState()
+        viewModel = createHomeViewModel()
+        state = viewModel.state.value
 
-        handle = viewModel.watchState { [weak self] newState in
-            self?.state = newState
+        stateTask = Task { [weak self, viewModel] in
+            for await newState in viewModel.state {
+                self?.state = newState
+            }
+            viewModel.destroy()   // цикл кончился отменой из deinit, следом гасим скоуп ViewModel
+        }
+        effectsTask = Task { [weak self, viewModel] in
+            for await effect in viewModel.effects {
+                switch onEnum(of: effect) {
+                case .emptyName: self?.showEmptyName = true
+                }
+            }
         }
     }
 
     deinit {
-        handle?.close()
+        stateTask?.cancel()
+        effectsTask?.cancel()
     }
 
     func send(_ intent: HomeIntent) {
@@ -55,5 +69,8 @@ struct HomeView: View {
             .listStyle(.plain)
         }
         .navigationTitle("Streakly")
+        .alert("Введи название привычки", isPresented: $adapter.showEmptyName) {
+            Button("Ок", role: .cancel) {}
+        }
     }
 }

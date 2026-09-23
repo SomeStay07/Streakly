@@ -12,9 +12,12 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,9 +34,19 @@ fun HomeScreen() {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     var draft by remember { mutableStateOf("") }
+    val snackbar = remember { SnackbarHostState() }
+
+    LaunchedEffect(Unit) {
+        viewModel.effects.collect { effect ->
+            when (effect) {
+                HomeEffect.EmptyName -> snackbar.showSnackbar("Введи название привычки")
+            }
+        }
+    }
 
     Scaffold(
         topBar = { TopAppBar(title = { Text("Streakly") }) },
+        snackbarHost = { SnackbarHost(snackbar) },
     ) { innerPadding ->
         Column(
             Modifier
