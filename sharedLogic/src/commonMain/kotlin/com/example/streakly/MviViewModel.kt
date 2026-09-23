@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-abstract class MviViewModel<S, I>(initial: S) : ViewModel() {
+abstract class MviViewModel<S : Any, I : Any>(initial: S) : ViewModel() {
 
     private val _state = MutableStateFlow(initial)
     val state: StateFlow<S> = _state.asStateFlow()

@@ -13,10 +13,11 @@ internal class HabitsRepository(private val dao: HabitDao) {
 
     val habits: Flow<List<Habit>> = dao.observeHabits().map { it.map(HabitEntity::toHabit) }
 
-    suspend fun add(name: String) {
+    suspend fun add(name: String): Boolean {
         val trimmed = name.trim()
-        if (trimmed.isEmpty()) return
+        if (trimmed.isEmpty()) return false
         dao.insert(HabitEntity(name = trimmed))
+        return true
     }
 
     suspend fun toggle(id: Long) = dao.toggleDone(id)

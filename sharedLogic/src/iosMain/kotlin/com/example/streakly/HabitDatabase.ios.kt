@@ -21,5 +21,5 @@ private fun documentDirectory(): String {
         create = false,
         error = null,
     )
-    return requireNotNull(documentDirectory?.path)
+    return documentDirectory?.path ?: throw DatabaseUnavailable("Папка Documents недоступна")
 }

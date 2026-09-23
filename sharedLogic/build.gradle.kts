@@ -5,10 +5,17 @@ plugins {
     alias(libs.plugins.androidMultiplatformLibrary)
     alias(libs.plugins.androidx.room)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.skie)
 }
 
 room {
     schemaDirectory("$projectDir/schemas")
+}
+
+skie {
+    analytics {
+        enabled.set(false)
+    }
 }
 
 kotlin {
